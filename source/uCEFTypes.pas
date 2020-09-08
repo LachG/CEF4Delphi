@@ -460,6 +460,31 @@ type
   // Used by TCefMediaSinkInfo and TCefMediaSourceInfo
   TCefMediaType = (mtCast, mtDial, mtUnknown);
 
+  // Used to specify internal chromium handlers should be created even if no Delphi event handler is set
+  TMustCreateHandler = (mchAudioHandler,
+                        mchDevToolsMessageObserver,
+                        mchLoadHandler,
+                        mchFocusHandler,
+                        mchContextMenuHandler,
+                        mchDialogHandler,
+                        mchKeyboardHandler,
+                        mchDisplayHandler,
+                        mchDownloadHandler,
+                        mchJsDialogHandler,
+// these three handlers are either always created or created based on other criteria
+//                        mchLifeSpanHandler,
+//                        mchRenderHandler,
+//                        mchRequestHandler,
+                        mchDragHandler,
+                        mchFindHandler,
+                        mchResourceRequestHandler,
+                        mchCookieAccessFilter,
+                        mchRequestContextHandler,
+                        mchMediaObserver,
+                        mchExtensionHandler
+  );
+  TMustCreateHandlers = set of TMustCreateHandler;
+
   // /include/internal/cef_types_win.h (cef_main_args_t)
   TCefMainArgs = record
     {$IFDEF MSWINDOWS}

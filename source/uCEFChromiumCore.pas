@@ -159,6 +159,8 @@ type
       // ICefClient
       FOnProcessMessageReceived       : TOnProcessMessageReceived;
 
+      FMustCreateHandlers             : TMustCreateHandlers;
+
       // ICefLoadHandler
       FOnLoadStart                    : TOnLoadStart;
       FOnLoadEnd                      : TOnLoadEnd;
@@ -902,6 +904,8 @@ type
       property  MaxConnectionsPerProxy        : integer                      read FMaxConnectionsPerProxy      write SetMaxConnectionsPerProxy;
 
     published
+      property MustCreateHandlers                  : TMustCreateHandlers                      read FMustCreateHandlers                 write FMustCreateHandlers;
+
       property  OnTextResultAvailable              : TOnTextResultAvailableEvent              read FOnTextResultAvailable              write FOnTextResultAvailable;
       property  OnPdfPrintFinished                 : TOnPdfPrintFinishedEvent                 read FOnPdfPrintFinished                 write FOnPdfPrintFinished;
       property  OnPrefsAvailable                   : TOnPrefsAvailableEvent                   read FOnPrefsAvailable                   write FOnPrefsAvailable;
@@ -4523,7 +4527,8 @@ end;
 
 function TChromiumCore.MustCreateLoadHandler : boolean;
 begin
-  Result := assigned(FOnLoadStart) or
+  Result := (mchLoadHandler in FMustCreateHandlers) or
+            assigned(FOnLoadStart) or
             assigned(FOnLoadEnd)   or
             assigned(FOnLoadError) or
             assigned(FOnLoadingStateChange);
@@ -4531,14 +4536,16 @@ end;
 
 function TChromiumCore.MustCreateFocusHandler : boolean;
 begin
-  Result := assigned(FOnTakeFocus) or
+  Result := (mchFocusHandler in FMustCreateHandlers) or
+            assigned(FOnTakeFocus) or
             assigned(FOnSetFocus)  or
             assigned(FOnGotFocus);
 end;
 
 function TChromiumCore.MustCreateContextMenuHandler : boolean;
 begin
-  Result := assigned(FOnBeforeContextMenu)  or
+  Result := (mchContextMenuHandler in FMustCreateHandlers) or
+            assigned(FOnBeforeContextMenu)  or
             assigned(FOnRunContextMenu)     or
             assigned(FOnContextMenuCommand) or
             assigned(FOnContextMenuDismissed);
@@ -4546,18 +4553,21 @@ end;
 
 function TChromiumCore.MustCreateDialogHandler : boolean;
 begin
-  Result := assigned(FOnFileDialog);
+  Result := (mchDialogHandler in FMustCreateHandlers) or
+            assigned(FOnFileDialog);
 end;
 
 function TChromiumCore.MustCreateKeyboardHandler : boolean;
 begin
-  Result := assigned(FOnPreKeyEvent) or
+  Result := (mchKeyboardHandler in FMustCreateHandlers) or
+            assigned(FOnPreKeyEvent) or
             assigned(FOnKeyEvent);
 end;
 
 function TChromiumCore.MustCreateDisplayHandler : boolean;
 begin
-  Result := assigned(FOnAddressChange)         or
+  Result := (mchDisplayHandler in FMustCreateHandlers) or
+            assigned(FOnAddressChange)         or
             assigned(FOnTitleChange)           or
             assigned(FOnFavIconUrlChange)      or
             assigned(FOnFullScreenModeChange)  or
@@ -4570,13 +4580,15 @@ end;
 
 function TChromiumCore.MustCreateDownloadHandler : boolean;
 begin
-  Result := assigned(FOnBeforeDownload) or
+  Result := (mchDownloadHandler in FMustCreateHandlers) or
+            assigned(FOnBeforeDownload) or
             assigned(FOnDownloadUpdated);
 end;
 
 function TChromiumCore.MustCreateJsDialogHandler : boolean;
 begin
-  Result := assigned(FOnJsdialog)           or
+  Result := (mchJsDialogHandler in FMustCreateHandlers) or
+            assigned(FOnJsdialog)           or
             assigned(FOnBeforeUnloadDialog) or
             assigned(FOnResetDialogState)   or
             assigned(FOnDialogClosed);
@@ -4599,18 +4611,21 @@ end;
 
 function TChromiumCore.MustCreateDragHandler : boolean;
 begin
-  Result := assigned(FOnDragEnter) or
+  Result := (mchDragHandler in FMustCreateHandlers) or
+            assigned(FOnDragEnter) or
             assigned(FOnDraggableRegionsChanged);
 end;
 
 function TChromiumCore.MustCreateFindHandler : boolean;
 begin
-  Result := assigned(FOnFindResult);
+  Result := (mchFindHandler in FMustCreateHandlers) or
+            assigned(FOnFindResult);
 end;
 
 function TChromiumCore.MustCreateResourceRequestHandler : boolean;
 begin
-  Result := assigned(FOnBeforeResourceLoad)        or
+  Result := (mchResourceRequestHandler in FMustCreateHandlers) or
+            assigned(FOnBeforeResourceLoad)        or
             assigned(FOnGetResourceHandler)        or
             assigned(FOnResourceRedirect)          or
             assigned(FOnResourceResponse)          or
@@ -4622,13 +4637,15 @@ end;
 
 function TChromiumCore.MustCreateCookieAccessFilter : boolean;
 begin
-  Result := assigned(FOnCanSendCookie) or
+  Result := (mchCookieAccessFilter in FMustCreateHandlers) or
+            assigned(FOnCanSendCookie) or
             assigned(FOnCanSaveCookie);
 end;
 
 function TChromiumCore.MustCreateRequestContextHandler : boolean;
 begin
-  Result := assigned(FOnRequestContextInitialized) or
+  Result := (mchRequestContextHandler in FMustCreateHandlers) or
+            assigned(FOnRequestContextInitialized) or
             assigned(FOnBeforePluginLoad) or
             assigned(FOnGetResourceRequestHandler_ReqCtxHdlr) or
             MustCreateResourceRequestHandler;
@@ -4636,7 +4653,8 @@ end;
 
 function TChromiumCore.MustCreateMediaObserver : boolean;
 begin
-  Result := assigned(FOnSinks) or
+  Result := (mchMediaObserver in FMustCreateHandlers) or
+            assigned(FOnSinks) or
             assigned(FOnRoutes) or
             assigned(FOnRouteStateChanged) or
             assigned(FOnRouteMessageReceived);
@@ -4644,7 +4662,8 @@ end;
 
 function TChromiumCore.MustCreateAudioHandler : boolean;
 begin
-  Result := assigned(FOnGetAudioParameters) or
+  Result := (mchAudioHandler in FMustCreateHandlers) or
+            assigned(FOnGetAudioParameters) or
             assigned(FOnAudioStreamStarted) or
             assigned(FOnAudioStreamPacket) or
             assigned(FOnAudioStreamStopped) or
@@ -4653,7 +4672,8 @@ end;
 
 function TChromiumCore.MustCreateDevToolsMessageObserver : boolean;
 begin
-  Result := assigned(FOnDevToolsMessage) or
+  Result := (mchDevToolsMessageObserver in FMustCreateHandlers) or
+            assigned(FOnDevToolsMessage) or
             assigned(FOnDevToolsMethodResult) or
             assigned(FOnDevToolsEvent) or
             assigned(FOnDevToolsAgentAttached) or
@@ -4662,7 +4682,8 @@ end;
 
 function TChromiumCore.MustCreateExtensionHandler : boolean;
 begin
-  Result := assigned(FOnExtensionLoadFailed) or
+  Result := (mchExtensionHandler in FMustCreateHandlers) or
+            assigned(FOnExtensionLoadFailed) or
             assigned(FOnExtensionLoaded) or
             assigned(FOnExtensionUnloaded) or
             assigned(FOnExtensionBeforeBackgroundBrowser) or
